@@ -1,0 +1,41 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100            # Hz; must equal 1 / time_step in the URDF
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    range_sensor_broadcaster:
+      type: range_sensor_broadcaster/RangeSensorBroadcaster
+
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+diff_drive_controller:
+  ros__parameters:
+    left_wheel_names:  ["left_wheel_joint"]
+    right_wheel_names: ["right_wheel_joint"]
+    wheel_separation: 0.20      # m, from Step 1
+    wheel_radius: 0.04          # m, from Step 1
+
+    base_frame_id: base_link
+    odom_frame_id: odom
+    enable_odom_tf: true
+    position_feedback: true     # odometry from the unwrapped wheel angles
+    open_loop: false
+    cmd_vel_timeout: 0.5        # s; the robot stops if commands stop
+
+    linear.x.has_velocity_limits: true      # Humble: limits are off without these two lines
+    angular.z.has_velocity_limits: true
+    linear.x.max_velocity:  0.30    # m/s  (7 rad/s x 0.04 m = 0.28 m/s, the ros2BubbleRob speed)
+    linear.x.min_velocity: -0.30
+    angular.z.max_velocity:  2.0    # rad/s
+    angular.z.min_velocity: -2.0
+
+range_sensor_broadcaster:
+  ros__parameters:
+    sensor_name: sensing_nose     # the <sensor name> in the URDF
+    frame_id: base_link
+    radiation_type: 1             # 1 = infrared, 0 = ultrasound
+    min_range: 0.0
+    max_range: 0.2                # m; set to the detection range of SensingNose in the scene

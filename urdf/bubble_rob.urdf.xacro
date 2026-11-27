@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<robot name="bubble_rob" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="hardware" default="coppeliasim"/>   <!-- coppeliasim | mock -->
+
+  <xacro:property name="wheel_radius"     value="0.04"/>
+  <xacro:property name="wheel_separation" value="0.20"/>
+
+  <link name="base_link">
+    <visual><geometry><sphere radius="0.1"/></geometry></visual>
+  </link>
+
+  <xacro:macro name="wheel" params="side y">
+    <link name="${side}_wheel">
+      <visual>
+        <origin rpy="${pi/2} 0 0"/>
+        <geometry><cylinder radius="${wheel_radius}" length="0.02"/></geometry>
+      </visual>
+    </link>
+    <joint name="${side}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${side}_wheel"/>
+      <origin xyz="0.05 ${y} -0.08"/>
+      <axis xyz="0 1 0"/>        <!-- positive = forward, as in CoppeliaSim -->
+    </joint>
+  </xacro:macro>
+
+  <xacro:wheel side="left"  y="${ wheel_separation/2}"/>
+  <xacro:wheel side="right" y="${-wheel_separation/2}"/>
+
+  <ros2_control name="BubbleRobSystem" type="system">
+    <hardware>
+      <xacro:if value="${'$(arg hardware)' == 'coppeliasim'}">
+        <plugin>bubble_rob_control/BubbleRobSystem</plugin>
+        <param name="host">localhost</param>
+        <param name="port">23000</param>
+        <param name="time_step">0.01</param>   <!-- s; must equal 1 / update_rate -->
+        <param name="lockstep">true</param>
+      </xacro:if>
+      <xacro:if value="${'$(arg hardware)' == 'mock'}">
+        <!-- ros2_control's simulated hardware: echoes commands back as states -->
+        <plugin>mock_components/GenericSystem</plugin>
+        <param name="calculate_dynamics">true</param>   <!-- integrate velocity into position -->
+      </xacro:if>
+    </hardware>
+    <joint name="left_wheel_joint">
+      <param name="sim_path">/bubbleRob/LeftMotor</param>
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="right_wheel_joint">
+      <param name="sim_path">/bubbleRob/RightMotor</param>
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <sensor name="sensing_nose">
+      <param name="sim_path">/bubbleRob/SensingNose</param>
+      <state_interface name="range">   <!-- distance in m, +inf when nothing is detected -->
+        <param name="initial_value">1.0</param>   <!-- out of range = no obstacle (used by mock) -->
+      </state_interface>
+    </sensor>
+  </ros2_control>
+</robot>

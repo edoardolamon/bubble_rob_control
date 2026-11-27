@@ -1,0 +1,7 @@
+<library path="bubble_rob_system">
+  <class name="bubble_rob_control/BubbleRobSystem"
+         type="bubble_rob_control::BubbleRobSystem"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>BubbleRob in CoppeliaSim, driven over the ZeroMQ remote API.</description>
+  </class>
+</library>
