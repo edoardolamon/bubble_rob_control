@@ -3,9 +3,9 @@
 <package format="3">
   <name>bubble_rob_control</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>ros2_control hardware plugin, controllers and obstacle avoider for BubbleRob simulated in CoppeliaSim through the ZeroMQ remote API.</description>
   <maintainer email="edoardo.lamon@unitn.it">elamon</maintainer>
-  <license>TODO: License declaration</license>
+  <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

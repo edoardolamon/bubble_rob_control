@@ -95,6 +95,8 @@ CallbackReturn BubbleRobSystem::on_configure(const rclcpp_lifecycle::State &)
   try {
     client_ = std::make_unique<RemoteAPIClient>(host_, port_);
     auto sim = client_->getObject().sim();
+    // getObject throws if a path is not in the scene, so a wrong scene fails here, with the
+    // path in the message, and not later in read()
     for (auto & j : joints_) {
       j.handle = sim.getObject(j.sim_path);
     }
@@ -117,6 +119,8 @@ CallbackReturn BubbleRobSystem::on_activate(const rclcpp_lifecycle::State &)
     sim.setFloatParam(sim.floatparam_simulation_time_step, time_step_);  // only while stopped
     sim.setStepping(lockstep_);
     sim.startSimulation();
+    // start the unwrapping from the current angle, and from rest: a controller that is
+    // activated later must not see a stale command
     for (auto & j : joints_) {
       j.last_raw = sim.getJointPosition(j.handle);
       j.position = j.last_raw;

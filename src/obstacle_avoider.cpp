@@ -1,3 +1,5 @@
+// Step 6 of the BubbleRob tutorial: drive forward, back up and turn when the nose sensor sees
+// an obstacle. Not started by bubble_rob.launch.py: see the README for the remappings.
 #include <chrono>
 #include <cmath>
 
@@ -19,6 +21,8 @@ public:
     reverse_time_   = declare_parameter("reverse_time", 3.0);      // s
     sensor_timeout_ = declare_parameter("sensor_timeout", 1.0);    // s
 
+    // TwistStamped, not Twist: diff_drive_controller on Humble subscribes to ~/cmd_vel with
+    // use_stamped_vel = true (the default), and Jazzy accepts only TwistStamped.
     cmd_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 10);
     sensor_sub_ = create_subscription<sensor_msgs::msg::Range>(
       "range", 10,
@@ -40,7 +44,7 @@ private:
   {
     geometry_msgs::msg::TwistStamped cmd;
     cmd.header.stamp = now();
-    cmd.header.frame_id = "base_link";
+    cmd.header.frame_id = "base_link";   // the velocities are expressed in the robot frame
 
     if ((now() - last_sensor_).seconds() > sensor_timeout_) {
       // no sensor data: fail safe, send zero

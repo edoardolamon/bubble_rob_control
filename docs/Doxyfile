@@ -1,0 +1,24 @@
+# docs/Doxyfile -- run from the repository root: doxygen docs/Doxyfile
+# Only the settings that differ from the defaults (`doxygen -g` writes the full list).
+
+PROJECT_NAME           = "bubble_rob_control"
+PROJECT_BRIEF          = "ros2_control for BubbleRob in CoppeliaSim"
+
+# What to document: the public headers of the package and the README as main page
+INPUT                  = include README.md
+RECURSIVE              = YES
+FILE_PATTERNS          = *.hpp *.h *.md
+EXCLUDE_PATTERNS       = */test/*
+USE_MDFILE_AS_MAINPAGE = README.md
+IMAGE_PATH             = docs/media
+
+# Where to write: HTML for reading, XML for Breathe (Sphinx)
+OUTPUT_DIRECTORY       = docs/_build/doxygen
+GENERATE_HTML          = YES
+GENERATE_XML           = YES
+GENERATE_LATEX         = NO
+
+# Warnings: report every undocumented public member, print nothing else
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_NO_PARAMDOC       = YES

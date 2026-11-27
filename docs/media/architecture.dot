@@ -1,0 +1,24 @@
+// docs/media/architecture.dot -- regenerate the SVG with:
+//   dot -Tsvg docs/media/architecture.dot -o docs/media/architecture.svg
+digraph architecture {
+  rankdir=LR;
+  node [shape=box, style="rounded", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  avoider [label="obstacle_avoider\n(node)"];
+  subgraph cluster_cm {
+    label="ros2_control_node"; fontname="Helvetica"; fontsize=10; style=dashed;
+    diff  [label="diff_drive_controller"];
+    jsb   [label="joint_state_broadcaster"];
+    rsb   [label="range_sensor_broadcaster"];
+    hw    [label="BubbleRobSystem\n(hardware plugin)"];
+  }
+  sim [label="CoppeliaSim\nBubbleRob scene", shape=box3d];
+
+  avoider -> diff [label="/diff_drive_controller/cmd_vel"];
+  rsb -> avoider  [label="/range_sensor_broadcaster/range"];
+  diff -> hw      [label="wheel velocity\ncommands"];
+  hw -> jsb       [label="wheel position,\nvelocity"];
+  hw -> rsb       [label="sensing_nose/range"];
+  hw -> sim       [label="ZeroMQ remote API\n(port 23000)", dir=both];
+}
